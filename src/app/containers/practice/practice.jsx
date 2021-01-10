@@ -18,11 +18,11 @@ class Practice extends Component {
     const { movies } = this.props;
 
     return (
-      <div>
+      <div className="images">
         {movies.map(movie => {        
-          const moviePoster = `https://image.tmdb.org/t/p/w500${movie.poster_path}`;
-          
-          return <img alt={movie.title} src={moviePoster} />  
+          const moviePoster = `https://image.tmdb.org/t/p/original/${movie.poster_path}`;
+
+          return <img className="image" alt={movie.title} src={moviePoster} />  
           })
         }
       </div>

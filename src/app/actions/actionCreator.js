@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const fetchMovies = () => async (dispatch) => {
   try {
-    const movies = await axios.get('https://api.themoviedb.org/3/movie/popular?api_key=5866d05c7430c5fadecafbbaec52573d');
+    const movies = await axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=5866d05c7430c5fadecafbbaec52573d&language=en-US&page=');
     console.log(movies);
     dispatch( addMovies(movies.data.results) );
   } catch(e) {

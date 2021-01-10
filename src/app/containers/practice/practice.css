@@ -1,0 +1,9 @@
+.images {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+}
+
+.image {
+  max-width: 400px;
+}
