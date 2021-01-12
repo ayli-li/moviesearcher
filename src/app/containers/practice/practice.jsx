@@ -14,24 +14,54 @@ class Practice extends Component {
     fetchMovies();
   }
 
-  render() {
+  renderMovies = () => {
     const { movies } = this.props;
+    return(
+      <div className="images">
+          {movies.map(( { poster_path, id, title } ) => {       
+      
+            const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
+
+            return <img className="image" alt={title} src={moviePoster} key={id} />  
+                         
+            })
+          }
+      </div>
+    )
+  }
+
+  renderError = () => {
+    const { error } = this.props;
+    return(
+      <>
+        { error && <div>{error}</div> }
+      </>
+    )
+  }
+
+  render() {
+    const { loader } = this.props;
 
     return (
-      <div className="images">
-        {movies.map(movie => {        
-          const moviePoster = `https://image.tmdb.org/t/p/original/${movie.poster_path}`;
-
-          return <img className="image" alt={movie.title} src={moviePoster} />  
-          })
+      <>
+       { loader ? <div>Loading,,,,,</div> : 
+        <>
+          { this.renderMovies() } 
+          { this.renderError() }
+        </>
         }
-      </div>
+      </>
     );
   }
 }
 
-const mapStateToProps = ({ moviesItems }) => ({
-  movies: moviesItems.movies
-})
+const mapStateToProps = (state) => {
+  console.log(state);
+  return ({
+    movies: state.moviesItems.movies,
+    error: state.moviesItems.errorMessage,
+    loader: state.moviesItems.isLoading,
+  })
+} 
 
 export default connect(mapStateToProps, { fetchMovies })(Practice);
