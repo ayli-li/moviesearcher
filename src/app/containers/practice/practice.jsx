@@ -1,28 +1,33 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 
-import { fetchMovies } from '../../actions/actionCreator';
+import { fetchMovies, searchMovies } from '../../actions/actionCreator';
+import { SearchInput } from '../../components/input/input';
 
 import './practice.css';
 
 class Practice extends Component {
-  state = {
-  }
 
   componentDidMount() {
     const { fetchMovies } = this.props;
     fetchMovies();
   }
 
-  renderMovies = () => {
-    const { movies } = this.props;
+  renderMovies = () => {  
+    const { movies, search } = this.props;
+
+    const filteredMovies = search ? movies.filter(movie => movie.title.toLowerCase().includes(search.toLowerCase()) ) : movies; 
+
     return(
       <div className="images">
-          {movies.map(( { poster_path, id, title } ) => {       
+          {filteredMovies.map(( { poster_path, id, title } ) => {       
       
             const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
 
-            return <img className="image" alt={title} src={moviePoster} key={id} />  
+            return <Link to={`/movie_page/${id}`}>
+                      <img className="image" alt={title} src={moviePoster} key={id} />
+                   </Link>  
                          
             })
           }
@@ -39,13 +44,19 @@ class Practice extends Component {
     )
   }
 
+  handleInputChange(event) {
+    const { searchMovies } = this.props;
+    searchMovies(event.target.value); 
+  }
+
   render() {
-    const { loader } = this.props;
+    const { loader, search } = this.props;   
 
     return (
       <>
        { loader ? <div>Loading,,,,,</div> : 
-        <>
+        <> 
+          <SearchInput value={search} onChange={event => this.handleInputChange(event)} />        
           { this.renderMovies() } 
           { this.renderError() }
         </>
@@ -56,12 +67,26 @@ class Practice extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(state);
   return ({
     movies: state.moviesItems.movies,
     error: state.moviesItems.errorMessage,
     loader: state.moviesItems.isLoading,
+    search: state.search.searchInput,
   })
 } 
 
-export default connect(mapStateToProps, { fetchMovies })(Practice);
+export default connect(mapStateToProps, { fetchMovies, searchMovies })(Practice);
+
+ // let filteredMovies = [];
+
+ // if(search === '') {             
+ //    filteredMovies.push(...movies);         
+ // } else {
+ //   movies.map((movie) => {         
+ //     if(movie.title.toLowerCase().includes(search.toLowerCase() )) {
+ //       filteredMovies.push(movie);
+ //     } 
+ //     return '';
+ //   })      
+ // } 
+ // console.log(filteredMovies);

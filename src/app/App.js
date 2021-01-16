@@ -1,12 +1,11 @@
 import React from 'react';
 
-import Practice from './containers/practice/practice';
 import Title from './components/title/title';
 
-const App = () => (
+const App = ({ children }) => (
   <>
     <Title title="Redux Practice" />
-    <Practice />
+    {children}
   </>
 );
 

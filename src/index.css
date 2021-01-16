@@ -4,3 +4,7 @@ body {
   font-family: 'Roboto', sans-serif;
   background-color: #f7f7f7;
 }
+
+.image {
+  max-width: 400px;
+}
