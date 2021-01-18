@@ -1,13 +1,31 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import debounce from 'lodash.debounce';
 
-import { fetchMovies, searchMovies } from '../../actions/actionCreator';
+import { fetchMovies, fetchSearch, setInputValueSearch } from '../../actions/actionCreator';
 import { SearchInput } from '../../components/input/input';
 
 import './practice.css';
 
 class Practice extends Component {
+
+  constructor(props) {
+    super();
+
+    this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
+  }
+
+  debounceApiSearch(searchInputText) {
+    const { fetchSearch } = this.props;
+    fetchSearch(searchInputText);
+  }
+
+  handleInputChange(event) {
+    const { setInputValueSearch } = this.props;
+    setInputValueSearch(event.target.value); 
+    this.debounceApiSearch(event.target.value);  
+  }
 
   componentDidMount() {
     const { fetchMovies } = this.props;
@@ -15,13 +33,13 @@ class Practice extends Component {
   }
 
   renderMovies = () => {  
-    const { movies, search } = this.props;
+    const { movies } = this.props;
 
-    const filteredMovies = search ? movies.filter(movie => movie.title.toLowerCase().includes(search.toLowerCase()) ) : movies; 
+    // const filteredMovies = search ? movies.filter(movie => movie.title.toLowerCase().includes(search.toLowerCase()) ) : movies; 
 
     return(
       <div className="images">
-          {filteredMovies.map(( { poster_path, id, title } ) => {       
+          {movies.map(( { poster_path, id, title } ) => {       
       
             const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
 
@@ -44,19 +62,14 @@ class Practice extends Component {
     )
   }
 
-  handleInputChange(event) {
-    const { searchMovies } = this.props;
-    searchMovies(event.target.value); 
-  }
-
   render() {
-    const { loader, search } = this.props;   
+    const { loader, searchInput, searchResult } = this.props;   
 
     return (
       <>
        { loader ? <div>Loading,,,,,</div> : 
         <> 
-          <SearchInput value={search} onChange={event => this.handleInputChange(event)} />        
+          <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />        
           { this.renderMovies() } 
           { this.renderError() }
         </>
@@ -71,11 +84,12 @@ const mapStateToProps = (state) => {
     movies: state.moviesItems.movies,
     error: state.moviesItems.errorMessage,
     loader: state.moviesItems.isLoading,
-    search: state.search.searchInput,
+    searchInput: state.search.searchInput,
+    searchResult: state.search.searchResult
   })
 } 
 
-export default connect(mapStateToProps, { fetchMovies, searchMovies })(Practice);
+export default connect(mapStateToProps, { fetchMovies, setInputValueSearch, fetchSearch })(Practice);
 
  // let filteredMovies = [];
 

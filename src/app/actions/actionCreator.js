@@ -1,4 +1,4 @@
-import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING } from '../../constants';
+import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_INPUT_SEARCH } from '../../constants';
 import axios from 'axios';
 
 export const fetchMovies = () => async (dispatch, getState) => {
@@ -6,6 +6,7 @@ export const fetchMovies = () => async (dispatch, getState) => {
   console.log(state);
 
   dispatch( setMoviesLoader(true) );
+  dispatch( setSearchResultValue('') );
 
   try {
     const movies = await axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=5866d05c7430c5fadecafbbaec52573d&language=en-US&page=');   
@@ -38,17 +39,33 @@ const setMoviesLoader = loader => {
   })
 }
 
-export const searchMovies = search => {
+export const setInputValueSearch = search => {
   return ({
-    type: FETCH_MOVIES_SEARCH,
+    type: SET_INPUT_SEARCH,
     search
   })
 }
 
+const setSearchResultValue = searchResult => {
+  return ({
+    type: FETCH_MOVIES_SEARCH,
+    searchResult
+  })
+}
+
+export const fetchSearch = (search) => async (dispatch) => { 
+  try {
+    const filteredSearch = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=5866d05c7430c5fadecafbbaec52573d&query=${search}`);
+    dispatch( setSearchResultValue(filteredSearch.data.results) );
+  } catch(e) {
+      console.log(e);
+  }
+}
+
 export const fetchMovie = (id) => async (dispatch) => {
+  dispatch( setSearchResultValue('') );
+  dispatch( setInputValueSearch('') );
   dispatch( setMovieLoader(true) );  
-  //const id = this.props.match.params.id || '';
-  //console.log(id);
 
   try {
     const movie = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=5866d05c7430c5fadecafbbaec52573d`);   
@@ -80,13 +97,3 @@ const setMovieLoader = loader => {
     loader
   })
 }
-
-// export const fetchSearch = (search) => async (dispatch) => { 
-//   try {
-//     const filteredSearch = await axios.get(`https://api.themoviedb.org/3/search/movie?api_key=5866d05c7430c5fadecafbbaec52573d&query=${search}`);
-//     console.log(filteredSearch);
-//     dispatch( searchMovies(filteredSearch.data.results) );
-//   } catch(e) {
-//       console.log(e);
-//   }
-// }

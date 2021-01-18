@@ -1,7 +1,7 @@
 import { FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING } from '../../constants';
 
 const initialState = {
-  movie: [],
+  movie: null,
   errorMessage: '',
   isLoading: false,
 }

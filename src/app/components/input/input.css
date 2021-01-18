@@ -3,3 +3,8 @@ form {
   justify-content: center;
   margin-bottom: 30px;
 }
+
+.links {
+  display: block;
+  text-align: center;
+}

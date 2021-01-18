@@ -4,20 +4,12 @@ import './index.css';
 import App from './app/App.js';
 import { Provider } from 'react-redux';
 import store from './app/store';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
-
-import Practice from './app/containers/practice/practice'
-import MoviePage from './app/containers/movie_page/movie_page'
+import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render((
   <BrowserRouter>
     <Provider store={store}>
-      <App>
-        <Switch>
-          <Route exact path='/' component={Practice} />
-          <Route path='/movie_page/:id' component={MoviePage} />
-        </Switch>
-      </App>
+      <App />
     </Provider>
   </BrowserRouter>
 ), document.getElementById('root'));

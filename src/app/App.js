@@ -1,11 +1,17 @@
 import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
 import Title from './components/title/title';
+import Practice from './containers/practice/practice';
+import MoviePage from './containers/movie_page/movie_page';
 
-const App = ({ children }) => (
+const App = () => (
   <>
     <Title title="Redux Practice" />
-    {children}
+    <Switch>
+      <Route exact path='/' component={Practice} />
+      <Route path='/movie_page/:id' component={MoviePage} />
+    </Switch>
   </>
 );
 
