@@ -30,25 +30,15 @@ class MoviePage extends Component {
     const id = this.props.match.params.id || '';
     const { fetchMovie } = this.props;
     fetchMovie(id);
-  } 
+  }
 
-  // handleIdChange() {
-  //   const apiId = this.props.match.params.id || '';
-  //   const { movie } = this.props;
-  //   if(apiId !== movie.id) {
-  //     this.renderMovie();
-  //   }
-  // }
-
-  // componentDidUpdate() {
-  //   const id = this.props.match.params.id || '';
-  //   const { movie } = this.props;
-  //   console.log(id);
-  //   console.log(movie.id);
-  //   if(id !== movie.id) {
-  //     this.renderMovie();
-  //   }
-  // }
+  componentDidUpdate(prevProps) {
+    const { fetchMovie } = this.props;
+    const url = prevProps.history.location.pathname.split("movie_page/")[1];
+    if(prevProps.match.params.id !== url) {
+      fetchMovie(url);
+    }
+  }
 
   renderMovie = () => {
     const { movie } = this.props;
@@ -87,7 +77,6 @@ class MoviePage extends Component {
           <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />        
           { this.renderMovie() } 
           { this.renderError() }
-          { this.handleIdChange() }
         </>
         }
       </>      

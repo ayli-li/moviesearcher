@@ -63,8 +63,9 @@ export const fetchSearch = (search) => async (dispatch) => {
 }
 
 export const fetchMovie = (id) => async (dispatch) => {
+  console.log(id);
   dispatch( setSearchResultValue('') );
-  dispatch( setInputValueSearch('') );
+  dispatch( setInputValueSearch([]) );
   dispatch( setMovieLoader(true) );  
 
   try {

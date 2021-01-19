@@ -11,9 +11,9 @@ export const SearchInput = ( {value, onChange, searchResult} ) => {
   
     <>
     { searchResult.length !== 0 && 
-        searchResult.slice(0, 7).map(( { title, vote_average, id} ) =>  {
-          return <div className="links">  
-                   <Link to={`/movie_page/${id}`} className="link">
+        searchResult.slice(0, 7).map(( { title, vote_average, id } ) =>  {
+          return <div className="link" key={id}>  
+                   <Link to={`/movie_page/${id}`}>
                      <span>{title}</span>
                      <span>{vote_average}</span>
                    </Link>
