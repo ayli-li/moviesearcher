@@ -32,6 +32,24 @@ class Practice extends Component {
     fetchMovies();
   }
 
+  // componentDidUpdate(prevProps) {
+  //   const { fetchMovies } = this.props;
+  //   let nextPageStep = 1;
+  //   console.log(prevProps);
+
+  //   window.onscroll = () => (
+  //       const scrollHeight = Math.max(
+  //       document.body.scrollHeight, document.documentElement.scrollHeight,
+  //       document.body.offsetHeight, document.documentElement.offsetHeight,
+  //       document.body.clientHeight, document.documentElement.clientHeight);
+
+  //       if (window.scrollY >= scrollHeight - window.innerHeight) {        
+  //         fetchMovies(++nextPageStep);
+  //         console.log(nextPageStep);
+  //   }
+  //   }
+  // }
+
   renderMovies = () => {  
     const { movies } = this.props;
 
@@ -43,7 +61,7 @@ class Practice extends Component {
       
             const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
 
-            return <Link to={`/movie_page/${id}`}>
+            return <Link to={`/movie-page/${id}`}>
                       <img className="image" alt={title} src={moviePoster} key={id} />
                    </Link>  
                          
@@ -84,6 +102,7 @@ const mapStateToProps = (state) => {
     movies: state.moviesItems.movies,
     error: state.moviesItems.errorMessage,
     loader: state.moviesItems.isLoading,
+    page: state.moviesItems.page,
     searchInput: state.search.searchInput,
     searchResult: state.search.searchResult
   })

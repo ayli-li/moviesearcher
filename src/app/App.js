@@ -10,7 +10,7 @@ const App = () => (
     <Title title="Redux Practice" />
     <Switch>
       <Route exact path='/' component={Practice} />
-      <Route exact path='/movie_page/:id' component={MoviePage} />
+      <Route exact path='/movie-page/:id' component={MoviePage} />
     </Switch>
   </>
 );

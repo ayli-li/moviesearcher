@@ -6,3 +6,7 @@
   color: rgba(175, 47, 47, 0.15);
   margin-bottom: 20px;
 }
+
+.title__link {
+  text-decoration: none;
+}

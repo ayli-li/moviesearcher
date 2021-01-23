@@ -1,7 +1,7 @@
-import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_INPUT_SEARCH } from '../../constants';
+import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_MOVIES_PAGE, SET_INPUT_SEARCH } from '../../constants';
 import axios from 'axios';
 
-export const fetchMovies = () => async (dispatch, getState) => {
+export const fetchMovies = (pages) => async (dispatch, getState) => {
   const state = getState();
   console.log(state);
 
@@ -9,7 +9,7 @@ export const fetchMovies = () => async (dispatch, getState) => {
   dispatch( setSearchResultValue('') );
 
   try {
-    const movies = await axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=5866d05c7430c5fadecafbbaec52573d&language=en-US&page=');   
+    const movies = await axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=5866d05c7430c5fadecafbbaec52573d&language=en-US&page=${pages}`);   
     dispatch( addMovies(movies.data.results) );
     dispatch( setMoviesLoader(false) );   
   } catch {    
@@ -36,6 +36,13 @@ const setMoviesLoader = loader => {
   return ({
     type: FETCH_MOVIES_LOADING,
     loader
+  })
+}
+
+export const moviesPage = page => {
+  return ({
+    type: SET_MOVIES_PAGE,
+    page
   })
 }
 
