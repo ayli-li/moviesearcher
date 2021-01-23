@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 
-import { fetchMovies, fetchSearch, setInputValueSearch } from '../../actions/actionCreator';
+import { fetchMovies, fetchSearch, setInputValueSearch, setMoviesPage } from '../../actions/actionCreator';
 import { SearchInput } from '../../components/input/input';
 
 import './practice.css';
@@ -12,8 +12,12 @@ class Practice extends Component {
 
   constructor(props) {
     super();
+    this.state = {
+      lastScrollY: 0
+    }
 
     this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
+    this.handleScroll = this.handleScroll.bind(this);
   }
 
   debounceApiSearch(searchInputText) {
@@ -27,28 +31,38 @@ class Practice extends Component {
     this.debounceApiSearch(event.target.value);  
   }
 
+  handleScroll() {
+    const { setMoviesPage } = this.props;
+    const scrollHeight = Math.max(
+      document.body.scrollHeight, document.documentElement.scrollHeight,
+      document.body.offsetHeight, document.documentElement.offsetHeight,
+      document.body.clientHeight, document.documentElement.clientHeight);    
+    
+    if(window.scrollY > scrollHeight - window.innerHeight) {
+      this.setState({ lastScrollY: scrollHeight });
+      if(scrollHeight >= this.state.lastScrollY) {        
+        setMoviesPage();
+      }      
+    }        
+  }
+
   componentDidMount() {
     const { fetchMovies } = this.props;
     fetchMovies();
+    window.addEventListener('scroll', this.handleScroll);
   }
 
-  // componentDidUpdate(prevProps) {
-  //   const { fetchMovies } = this.props;
-  //   let nextPageStep = 1;
-  //   console.log(prevProps);
+  componentDidUpdate(prevProps) {
+    const { fetchMovies, page } = this.props;
 
-  //   window.onscroll = () => (
-  //       const scrollHeight = Math.max(
-  //       document.body.scrollHeight, document.documentElement.scrollHeight,
-  //       document.body.offsetHeight, document.documentElement.offsetHeight,
-  //       document.body.clientHeight, document.documentElement.clientHeight);
+    if(prevProps.page !== page) {
+      fetchMovies();
+    }
+  }  
 
-  //       if (window.scrollY >= scrollHeight - window.innerHeight) {        
-  //         fetchMovies(++nextPageStep);
-  //         console.log(nextPageStep);
-  //   }
-  //   }
-  // }
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.handleScroll);
+  }
 
   renderMovies = () => {  
     const { movies } = this.props;
@@ -84,16 +98,13 @@ class Practice extends Component {
     const { loader, searchInput, searchResult } = this.props;   
 
     return (
-      <>
-       { loader ? <div>Loading,,,,,</div> : 
         <> 
           <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />        
-          { this.renderMovies() } 
+          { this.renderMovies() }
+
           { this.renderError() }
-        </>
-        }
-      </>
-    );
+        </>       
+    );       
   }
 }
 
@@ -108,7 +119,7 @@ const mapStateToProps = (state) => {
   })
 } 
 
-export default connect(mapStateToProps, { fetchMovies, setInputValueSearch, fetchSearch })(Practice);
+export default connect(mapStateToProps, { fetchMovies, setInputValueSearch, setMoviesPage, fetchSearch })(Practice);
 
  // let filteredMovies = [];
 

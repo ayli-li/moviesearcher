@@ -7,10 +7,10 @@ const initialState = {
   page: 1
 }
 
-const movies = (state = initialState, { type, movies, err, loader, page }) => {
+const movies = (state = initialState, { type, movies, err, loader }) => {
   switch(type) {
     case FETCH_MOVIES_SUCCESS:
-      return {...state, movies};
+      return {...state, movies: state.movies.concat(movies)};
     
     case FETCH_MOVIES_ERROR:
       return {...state, errorMessage: err};
@@ -19,7 +19,7 @@ const movies = (state = initialState, { type, movies, err, loader, page }) => {
       return {...state, isLoading: loader};
     
     case SET_MOVIES_PAGE:
-      return {...state, page};
+      return {...state, page: state.page + 1};
     
     default:
       return state;
