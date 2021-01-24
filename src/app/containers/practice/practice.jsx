@@ -38,7 +38,7 @@ class Practice extends Component {
       document.body.offsetHeight, document.documentElement.offsetHeight,
       document.body.clientHeight, document.documentElement.clientHeight);    
     
-    if(window.scrollY > scrollHeight - window.innerHeight) {
+    if(window.scrollY + 1 > scrollHeight - window.innerHeight) {
       this.setState({ lastScrollY: scrollHeight });
       if(scrollHeight >= this.state.lastScrollY) {        
         setMoviesPage();
@@ -101,7 +101,7 @@ class Practice extends Component {
         <> 
           <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />        
           { this.renderMovies() }
-
+          { loader && <div>Loading,,,,,,,</div>}
           { this.renderError() }
         </>       
     );       

@@ -5,8 +5,6 @@ export const fetchMovies = () => async (dispatch, getState) => {
   const state = getState();
   const page = state.moviesItems.page;
 
-  //dispatch( setMoviesPage() );
-
   dispatch( setMoviesLoader(true) );
   dispatch( setSearchResultValue('') );
 

@@ -34,7 +34,9 @@ class MoviePage extends Component {
 
   componentDidUpdate(prevProps) {
     const { fetchMovie } = this.props;
+    console.log(prevProps);
     const url = prevProps.history.location.pathname.split("movie-page/")[1];
+    console.log(url);
     if(prevProps.match.params.id !== url) {
       fetchMovie(url);
     }
