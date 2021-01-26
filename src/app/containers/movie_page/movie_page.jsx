@@ -12,6 +12,10 @@ class MoviePage extends Component {
   constructor(props) {
     super();
 
+    this.state = {
+      activeFavoriteClassName: 'favorite_heart_no-active'
+    }
+
     this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
   }
 
@@ -26,6 +30,12 @@ class MoviePage extends Component {
     this.debounceApiSearch(event.target.value);  
   }
 
+  handleFavoriteClick(event) {
+    const { ids } = this.props;
+    ids.push(event.target.id);
+
+  }
+
   componentDidMount() {
     const id = this.props.match.params.id || '';
     const { fetchMovie } = this.props;
@@ -34,9 +44,8 @@ class MoviePage extends Component {
 
   componentDidUpdate(prevProps) {
     const { fetchMovie } = this.props;
-    console.log(prevProps);
     const url = prevProps.history.location.pathname.split("movie-page/")[1];
-    console.log(url);
+
     if(prevProps.match.params.id !== url) {
       fetchMovie(url);
     }
@@ -49,12 +58,16 @@ class MoviePage extends Component {
 
       return (
         <div className="data">
-          <div>
-            <img className="image" alt={movie.title} src={moviePoster} key={movie.id} />
+          <div className="movie_link">
+            <img className="image movie_link" alt={movie.title} src={moviePoster} key={movie.id} />
+            <span className={this.state.activeFavoriteClassName} id={movie.id} onClick={event => this.handleFavoriteClick(event)}>Heart</span>
           </div>
-          <div>{movie.title}</div>
-          <div>{movie.overview}</div>    
-          <div>{movie.vote_average}</div>
+          <div>
+            <div>{movie.title}</div>
+            <div>{movie.overview}</div>    
+            <div>{movie.vote_average}</div>
+          </div>
+          
         </div>
       )
     }
@@ -91,6 +104,7 @@ const mapStateToProps = (state) => {
     movie: state.movie.movie,
     error: state.movie.errorMessage,
     loader: state.movie.isLoading,
+    ids: state.favorites.ids,
     searchInput: state.search.searchInput,
     searchResult: state.search.searchResult
   })

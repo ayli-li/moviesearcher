@@ -5,9 +5,16 @@ import { Link } from 'react-router-dom';
 import './title.css';
 
 const Title = ({ title }) => (
-  <Link to={`/`} className="title__link">
-    <h1 className="title">{title}</h1>
-  </Link>  
+  <div className="title">
+    <Link to={'/'} className="title_link">
+      <h1 className="title_name">{title}</h1>
+    </Link> 
+    <Link to={'/favorites'} className="title_favorites">
+      <span>Favorites</span>
+    </Link>
+  </div>
+  
+
 );
 
 Title.propTypes = {

@@ -1,4 +1,4 @@
-import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_MOVIES_PAGE, SET_INPUT_SEARCH } from '../../constants';
+import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_MOVIES_PAGE, SET_INPUT_SEARCH, ADD_FAVORITE_MOVIE } from '../../constants';
 import axios from 'axios';
 
 export const fetchMovies = () => async (dispatch, getState) => {
@@ -69,7 +69,7 @@ export const fetchSearch = (search) => async (dispatch) => {
 }
 
 export const fetchMovie = (id) => async (dispatch) => {
-  console.log(id);
+
   dispatch( setSearchResultValue('') );
   dispatch( setInputValueSearch([]) );
   dispatch( setMovieLoader(true) );  
@@ -102,5 +102,12 @@ const setMovieLoader = loader => {
   return ({
     type: FETCH_MOVIE_LOADING,
     loader
+  })
+}
+
+const addFavoriteMovies = ids => {
+  return ({
+    type: ADD_FAVORITE_MOVIE,
+    ids
   })
 }

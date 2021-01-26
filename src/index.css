@@ -8,3 +8,37 @@ body {
 .image {
   max-width: 400px;
 }
+
+.movie_link {
+  position: relative;
+}
+
+.favorite_heart_no-active {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding-bottom: 10px;
+  display: none;
+}
+
+.favorite_heart_active {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding-bottom: 10px;
+  background-color: brown;
+  display: none;
+}
+
+.movie_link:hover .favorite_heart_no-active {
+  display: block;
+  cursor: pointer;
+  color: green;
+}
+
+.movie_link:hover .favorite_heart_active {
+  display: block;
+  cursor: pointer;
+  color: green;
+  background-color: blue;
+}

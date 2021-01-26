@@ -1,4 +1,11 @@
 .title {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  align-items: baseline;
+}
+
+.title_name {
   font-family: 'Permanent Marker', cursive;
   font-size: 80px;
   text-align: center;
@@ -7,6 +14,11 @@
   margin-bottom: 20px;
 }
 
-.title__link {
+.title_link {
   text-decoration: none;
+}
+
+.title_favorites {
+  text-decoration: none;
+  padding-right: 20px;
 }
