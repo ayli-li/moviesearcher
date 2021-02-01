@@ -48,8 +48,6 @@ class Practice extends Component {
     }        
   }
 
-
-
   handleFavoriteClick(event) {
     const { ids } = this.props;
     event.preventDefault();
