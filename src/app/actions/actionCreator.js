@@ -126,7 +126,3 @@ const updateFavoriteList = () => {
     type: UPDATE_FAVORITE_LIST,
   })  
 }
-
-export const fetchFavoriteMovies = (id) => async (dispatch) => {
-
-}

@@ -13,14 +13,11 @@ class Practice extends Component {
   constructor(props) {
     super();
     this.state = {
-      lastScrollY: 0,
-      //activeFavoriteClassName: 'favorite_heart_no-active'
+      lastScrollY: 0
     }
 
     this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
     this.handleScroll = this.handleScroll.bind(this);
-    this.handleFavoriteClick = this.handleFavoriteClick.bind(this);
-    this.removeIdFromArr = this.removeIdFromArr.bind(this);
   }
 
   debounceApiSearch(searchInputText) {
@@ -49,44 +46,11 @@ class Practice extends Component {
     }        
   }
 
-  removeIdFromArr(arr, item) {
-    for(let i = arr.length; i--;) {
-      if(arr[i] === item) {
-        arr.splice(i, 1);
-      }
-    }
-  }
-
   handleFavoriteClick(id, event) {
     const { setFavorite } = this.props;
     event.preventDefault();
 
     setFavorite(id);
-
-    // if (ids.includes(id) ) {
-    //   setFavoriteMovie(false);
-    //   this.removeIdFromArr(ids, id);
-    // } else {
-    //   setFavoriteMovie(true);
-    //   ids.push(id);
-    // }
-    // console.log(id);
-    
-    // console.log(ids);
-    // console.log(isFavorite);
-
-
-  
-    // if(event.target.className !== 'favorite_heart_no-active') {
-    //   this.setState({
-    //     activeFavoriteClassName: 'favorite_heart_no-active'
-    //   });
-    //   //this.removeIdFromArr(ids, event.target.id);
-    // } else {
-    //   this.setState({
-    //     activeFavoriteClassName: 'favorite_heart_active'
-    //   })
-    // }
   }  
 
   componentDidMount() {
@@ -122,7 +86,6 @@ class Practice extends Component {
                       <img className="image" alt={title} src={moviePoster} key={id} />
                       <button className={isFavorite ? "favorite_heart_active" : "favorite_heart_no-active"} onClick={(event) => this.handleFavoriteClick(id, event)}>Heart</button>
                    </Link>
-                         
             })
           }
       </div>
@@ -158,8 +121,6 @@ const mapStateToProps = (state) => {
     error: state.moviesItems.errorMessage,
     loader: state.moviesItems.isLoading,
     page: state.moviesItems.page,
-    //isFavorite: state.favorites.isFavorite,
-   // ids: state.favorites.ids,
     searchInput: state.search.searchInput,
     searchResult: state.search.searchResult
   })

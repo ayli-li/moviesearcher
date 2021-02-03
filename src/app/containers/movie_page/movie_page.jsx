@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import debounce from 'lodash.debounce';
 
-import { fetchMovie, fetchSearch, setInputValueSearch } from '../../actions/actionCreator';
+import { fetchMovie, fetchSearch, setInputValueSearch, setFavorite } from '../../actions/actionCreator';
 import { SearchInput } from '../../components/input/input';
 
 import './movie_page.css';
@@ -12,12 +12,7 @@ class MoviePage extends Component {
   constructor(props) {
     super();
 
-    // this.state = {
-    //   //activeFavoriteClassName: 'favorite_heart_no-active'
-    // }
-
     this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
-    this.removeIdFromArr = this.removeIdFromArr.bind(this);
   }
 
   debounceApiSearch(searchInputText) {
@@ -31,30 +26,11 @@ class MoviePage extends Component {
     this.debounceApiSearch(event.target.value);  
   }
 
-  removeIdFromArr(arr, item) {
-    for(let i = arr.length; i--;) {
-      if(arr[i] === item) {
-        arr.splice(i, 1);
-      }
-    }
-  }
+  handleFavoriteClick(id) {
+    const { setFavorite } = this.props;
 
-  handleFavoriteClick(event) {
-    const { ids, isFavorite, setFavoriteMovie } = this.props;
-    const id = event.target.id;    
-
-    if (ids.includes(id) ) {
-      setFavoriteMovie(false);
-      this.removeIdFromArr(ids, id);
-    } else {
-      setFavoriteMovie(true);
-      ids.push(id);
-    }
-    
-    console.log(ids);
-    console.log(isFavorite);
-
-  }
+    setFavorite(id);
+  } 
 
   componentDidMount() {
     const id = this.props.match.params.id || '';
@@ -72,15 +48,18 @@ class MoviePage extends Component {
   }
 
   renderMovie = () => {
-    const { movie } = this.props;
+    const { movie, favorites } = this.props;
+
     if(movie) {
       const moviePoster = `https://image.tmdb.org/t/p/original/${movie.poster_path}`;
+
+      const movieFavoriteClass = favorites.filter(item => item.id === movie.id) && favorites.length > 0 ? "favorite_heart_active" : "favorite_heart_no-active";
 
       return (
         <div className="data">
           <div className="movie_link">
-            <img className="image movie_link" alt={movie.title} src={moviePoster} key={movie.id} />
-            <span className="favorite_heart_no-active" id={movie.id} onClick={event => this.handleFavoriteClick(event)}>Heart</span>
+            <img className="image" alt={movie.title} src={moviePoster} key={movie.id} />
+            <button className={movieFavoriteClass} onClick={() => this.handleFavoriteClick(movie.id)}>Heart</button>
           </div>
           <div>
             <div>{movie.title}</div>
@@ -122,13 +101,12 @@ class MoviePage extends Component {
 const mapStateToProps = (state) => {
   return ({
     movie: state.movie.movie,
+    favorites: state.moviesItems.favorites,
     error: state.movie.errorMessage,
     loader: state.movie.isLoading,
-    //ids: state.favorites.ids,
-    //isFavorite: state.favorites.isFavorite,
     searchInput: state.search.searchInput,
     searchResult: state.search.searchResult
   })
 } 
 
-export default connect(mapStateToProps, { fetchMovie, setInputValueSearch, fetchSearch })(MoviePage);
+export default connect(mapStateToProps, { fetchMovie, setInputValueSearch, setFavorite, fetchSearch })(MoviePage);
