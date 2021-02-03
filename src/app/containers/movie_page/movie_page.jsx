@@ -12,11 +12,12 @@ class MoviePage extends Component {
   constructor(props) {
     super();
 
-    this.state = {
-      activeFavoriteClassName: 'favorite_heart_no-active'
-    }
+    // this.state = {
+    //   //activeFavoriteClassName: 'favorite_heart_no-active'
+    // }
 
     this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
+    this.removeIdFromArr = this.removeIdFromArr.bind(this);
   }
 
   debounceApiSearch(searchInputText) {
@@ -30,9 +31,28 @@ class MoviePage extends Component {
     this.debounceApiSearch(event.target.value);  
   }
 
+  removeIdFromArr(arr, item) {
+    for(let i = arr.length; i--;) {
+      if(arr[i] === item) {
+        arr.splice(i, 1);
+      }
+    }
+  }
+
   handleFavoriteClick(event) {
-    const { ids } = this.props;
-    ids.push(event.target.id);
+    const { ids, isFavorite, setFavoriteMovie } = this.props;
+    const id = event.target.id;    
+
+    if (ids.includes(id) ) {
+      setFavoriteMovie(false);
+      this.removeIdFromArr(ids, id);
+    } else {
+      setFavoriteMovie(true);
+      ids.push(id);
+    }
+    
+    console.log(ids);
+    console.log(isFavorite);
 
   }
 
@@ -60,7 +80,7 @@ class MoviePage extends Component {
         <div className="data">
           <div className="movie_link">
             <img className="image movie_link" alt={movie.title} src={moviePoster} key={movie.id} />
-            <span className={this.state.activeFavoriteClassName} id={movie.id} onClick={event => this.handleFavoriteClick(event)}>Heart</span>
+            <span className="favorite_heart_no-active" id={movie.id} onClick={event => this.handleFavoriteClick(event)}>Heart</span>
           </div>
           <div>
             <div>{movie.title}</div>
@@ -104,7 +124,8 @@ const mapStateToProps = (state) => {
     movie: state.movie.movie,
     error: state.movie.errorMessage,
     loader: state.movie.isLoading,
-    ids: state.favorites.ids,
+    //ids: state.favorites.ids,
+    //isFavorite: state.favorites.isFavorite,
     searchInput: state.search.searchInput,
     searchResult: state.search.searchResult
   })

@@ -1,4 +1,4 @@
-.movies {
+.favorites {
   display: flex;
   justify-content: center;
   flex-flow: row wrap;

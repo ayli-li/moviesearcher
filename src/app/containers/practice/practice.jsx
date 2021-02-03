@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 
-import { fetchMovies, fetchSearch, setInputValueSearch, setMoviesPage } from '../../actions/actionCreator';
+import { fetchMovies, fetchSearch, setInputValueSearch, setMoviesPage, setFavorite } from '../../actions/actionCreator';
 import { SearchInput } from '../../components/input/input';
 
 import './practice.css';
@@ -14,12 +14,13 @@ class Practice extends Component {
     super();
     this.state = {
       lastScrollY: 0,
-      activeFavoriteClassName: 'favorite_heart_no-active'
+      //activeFavoriteClassName: 'favorite_heart_no-active'
     }
 
     this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
     this.handleScroll = this.handleScroll.bind(this);
     this.handleFavoriteClick = this.handleFavoriteClick.bind(this);
+    this.removeIdFromArr = this.removeIdFromArr.bind(this);
   }
 
   debounceApiSearch(searchInputText) {
@@ -48,32 +49,45 @@ class Practice extends Component {
     }        
   }
 
-  handleFavoriteClick(event) {
-    const { ids } = this.props;
-    event.preventDefault();
-    ids.push(event.target.id);
-    console.log(ids);
+  removeIdFromArr(arr, item) {
+    for(let i = arr.length; i--;) {
+      if(arr[i] === item) {
+        arr.splice(i, 1);
+      }
+    }
   }
-  //   if(event.target.className !== 'favorite_heart_no-active') {
-  //     this.setState({
-  //       activeFavoriteClassName: 'favorite_heart_no-active'
-  //     });
-  //     this.removeIdFromArr(ids, event.target.id);
-  //   } else {
-  //     this.setState({
-  //       activeFavoriteClassName: 'favorite_heart_active'
-  //     })
 
-    // removeIdFromArr(arr, item) {
-  //   for(let i = arr.length; i--;) {
-  //     if(arr[i] === item) {
-  //       arr.splice(i, 1);
-  //     }
-  //   }
-  // }
-      
-      
+  handleFavoriteClick(id, event) {
+    const { setFavorite } = this.props;
+    event.preventDefault();
 
+    setFavorite(id);
+
+    // if (ids.includes(id) ) {
+    //   setFavoriteMovie(false);
+    //   this.removeIdFromArr(ids, id);
+    // } else {
+    //   setFavoriteMovie(true);
+    //   ids.push(id);
+    // }
+    // console.log(id);
+    
+    // console.log(ids);
+    // console.log(isFavorite);
+
+
+  
+    // if(event.target.className !== 'favorite_heart_no-active') {
+    //   this.setState({
+    //     activeFavoriteClassName: 'favorite_heart_no-active'
+    //   });
+    //   //this.removeIdFromArr(ids, event.target.id);
+    // } else {
+    //   this.setState({
+    //     activeFavoriteClassName: 'favorite_heart_active'
+    //   })
+    // }
+  }  
 
   componentDidMount() {
     const { fetchMovies } = this.props;
@@ -100,13 +114,13 @@ class Practice extends Component {
 
     return(
       <div className="movies">
-          {movies.map(( { poster_path, id, title } ) => {       
+          {movies.map(( { poster_path, id, title, isFavorite } ) => {       
       
             const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
 
             return <Link to={`/movie-page/${id}`} className="movie_link">
                       <img className="image" alt={title} src={moviePoster} key={id} />
-                      <span className={this.state.activeFavoriteClassName} id={id} onClick={event => this.handleFavoriteClick(event)}>Heart</span>
+                      <button className={isFavorite ? "favorite_heart_active" : "favorite_heart_no-active"} onClick={(event) => this.handleFavoriteClick(id, event)}>Heart</button>
                    </Link>
                          
             })
@@ -144,13 +158,14 @@ const mapStateToProps = (state) => {
     error: state.moviesItems.errorMessage,
     loader: state.moviesItems.isLoading,
     page: state.moviesItems.page,
-    ids: state.favorites.ids,
+    //isFavorite: state.favorites.isFavorite,
+   // ids: state.favorites.ids,
     searchInput: state.search.searchInput,
     searchResult: state.search.searchResult
   })
 } 
 
-export default connect(mapStateToProps, { fetchMovies, setInputValueSearch, setMoviesPage, fetchSearch })(Practice);
+export default connect(mapStateToProps, { fetchMovies, setInputValueSearch, setMoviesPage, setFavorite, fetchSearch })(Practice);
 
  // let filteredMovies = [];
 
