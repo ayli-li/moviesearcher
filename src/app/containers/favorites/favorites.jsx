@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 
-import { fetchSearch, setInputValueSearch } from '../../actions/actionCreator';
+import { fetchMovie, fetchSearch, setInputValueSearch, setFavorite } from '../../actions/actionCreator';
 import { SearchInput } from '../../components/input/input';
 
 import './favorites.css';
@@ -27,12 +27,35 @@ class Favorites extends Component {
     this.debounceApiSearch(event.target.value);  
   }
 
-  componentDidMount() {
+  handleFavoriteClick(id, event) {
+    const { setFavorite } = this.props;
+    event.preventDefault();
 
+    setFavorite(id);
+  }
+
+  componentDidMount() {
+    const { favorites, fetchMovie } = this.props;
+    favorites.map(( { id } ) => fetchMovie(id) );
   }
 
   renderFavorites = () => {  
-    
+    const { favorites } = this.props;
+
+    return(        
+        <div className="movies">
+            {favorites.map(( { poster_path, id, title, isFavorite } ) => {       
+          
+              const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
+
+              return <Link to={`/movie-page/${id}`} className="movie_link">
+                        <img className="image" alt={title} src={moviePoster} key={id} />
+                        <button className={isFavorite ? "favorite_heart_active" : "favorite_heart_no-active"} onClick={(event) => this.handleFavoriteClick(id, event)}>Heart</button>
+                    </Link>
+              })
+            }
+        </div>
+      )
   }
 
   renderError = () => {
@@ -45,15 +68,14 @@ class Favorites extends Component {
   }
 
   render() {
-    const { loader, searchInput, searchResult } = this.props;
+    const { loader, searchInput, searchResult, favorites } = this.props;
 
     return (
       <>
        { loader ? <div>Loading,,,,,</div> : 
         <> 
           <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />
-          { this.renderFavorites() }
-          { loader && <div>Loading,,,,,,,</div>}        
+          { favorites.length > 0 ? this.renderFavorites() : <h3>There is no favorite movies</h3> }      
           { this.renderError() }
         </>
         }
@@ -64,14 +86,13 @@ class Favorites extends Component {
 
 const mapStateToProps = (state) => {
   return ({
-     //isFavorite: state.favorites.isFavorite,
-     //ids: state.favorites.ids,
-     //error: state.favorites.errorMessage,
-     //loader: state.favorites.isLoading,  
-     //favorites: state.favorites.favorites,   
-     searchInput: state.search.searchInput,
-     searchResult: state.search.searchResult
+    favorites: state.moviesItems.favorites,
+    movie: state.movie.movie,  
+    error: state.movie.errorMessage,
+    loader: state.movie.isLoading,
+    searchInput: state.search.searchInput,
+    searchResult: state.search.searchResult
   })
 } 
 
-export default connect(mapStateToProps, { setInputValueSearch, fetchSearch })(Favorites);
+export default connect(mapStateToProps, { fetchMovie,  fetchSearch, setInputValueSearch, setFavorite })(Favorites);

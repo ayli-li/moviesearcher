@@ -53,20 +53,20 @@ class MoviePage extends Component {
     if(movie) {
       const moviePoster = `https://image.tmdb.org/t/p/original/${movie.poster_path}`;
 
-      const movieFavoriteClass = favorites.filter(item => item.id === movie.id) && favorites.length > 0 ? "favorite_heart_active" : "favorite_heart_no-active";
-
+      const setFavoriteClass = favorites
+                                  .map(( {id} ) => id)
+                                  .includes(movie.id) ? "favorite_heart_active" : "favorite_heart_no-active"; 
       return (
         <div className="data">
           <div className="movie_link">
             <img className="image" alt={movie.title} src={moviePoster} key={movie.id} />
-            <button className={movieFavoriteClass} onClick={() => this.handleFavoriteClick(movie.id)}>Heart</button>
+            <button className={setFavoriteClass} onClick={() => this.handleFavoriteClick(movie.id)}>Heart</button>
           </div>
           <div>
             <div>{movie.title}</div>
             <div>{movie.overview}</div>    
             <div>{movie.vote_average}</div>
-          </div>
-          
+          </div>          
         </div>
       )
     }
@@ -109,4 +109,4 @@ const mapStateToProps = (state) => {
   })
 } 
 
-export default connect(mapStateToProps, { fetchMovie, setInputValueSearch, setFavorite, fetchSearch })(MoviePage);
+export default connect(mapStateToProps, { fetchMovie, fetchSearch, setInputValueSearch, setFavorite })(MoviePage);

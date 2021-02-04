@@ -126,7 +126,7 @@ const mapStateToProps = (state) => {
   })
 } 
 
-export default connect(mapStateToProps, { fetchMovies, setInputValueSearch, setMoviesPage, setFavorite, fetchSearch })(Practice);
+export default connect(mapStateToProps, { fetchMovies, fetchSearch, setInputValueSearch, setMoviesPage, setFavorite })(Practice);
 
  // let filteredMovies = [];
 
