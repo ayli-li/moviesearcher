@@ -7,12 +7,16 @@ import {
   UPDATE_FAVORITE_LIST
 } from '../../constants';
 
+import { load, save } from 'redux-localstorage-simple';
+
+const moviesStorage = load({ namespace: 'movies' });
+
 const initialState = {
   movies: [],
   errorMessage: '',
   isLoading: false,
   page: 1,
-  favorites: []
+  favorites: (moviesStorage && moviesStorage.moviesItems?.favorites) ? moviesStorage.moviesItems.favorites : []
 }
 
 const movies = (state = initialState, {
@@ -41,7 +45,11 @@ const movies = (state = initialState, {
     case SET_FAVORITES_ID:
       return {
         ...state, movies: state.movies.map((movie) => {
+          
           if (movie.id === id) {
+            console.log(id);
+            localStorage.setItem('movies', JSON.stringify(movie));
+
             return {
               ...movie,             
               isFavorite: movie.isFavorite ? false : true

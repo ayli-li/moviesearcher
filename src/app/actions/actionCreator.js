@@ -79,8 +79,9 @@ export const fetchMovie = (id) => async (dispatch) => {
   dispatch( setMovieLoader(true) );  
 
   try {
-    const movie = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=5866d05c7430c5fadecafbbaec52573d`);   
-    dispatch( addMovie(movie.data) );
+    const movie = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=5866d05c7430c5fadecafbbaec52573d`);
+    const updateMovies = {...movie.data, isFavorite: false};
+    dispatch( addMovie(updateMovies) );
     dispatch( setMovieLoader(false) );   
   } catch {    
     dispatch( errMovie('Что-то пошло не так,,,,,,,,') );

@@ -14,7 +14,7 @@ const configureStore = preloadedState => (
     rootReducer,
     preloadedState,
     composeEnhancers(
-      applyMiddleware(save({ namespace: 'practice' }), thunk)
+      applyMiddleware(thunk)
     ),
   )
 );
