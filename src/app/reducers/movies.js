@@ -7,7 +7,7 @@ import {
   UPDATE_FAVORITE_LIST
 } from '../../constants';
 
-import { load, save } from 'redux-localstorage-simple';
+import { load } from 'redux-localstorage-simple';
 
 const moviesStorage = load({ namespace: 'movies' });
 
