@@ -1,4 +1,4 @@
-import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_MOVIES_PAGE, SET_INPUT_SEARCH, SET_FAVORITES_ID, UPDATE_FAVORITE_LIST } from '../../constants';
+import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_MOVIES_PAGE, SET_INPUT_SEARCH, SET_FAVORITES_ID } from '../../constants';
 import axios from 'axios';
 
 export const fetchMovies = () => async (dispatch, getState) => {
@@ -9,12 +9,8 @@ export const fetchMovies = () => async (dispatch, getState) => {
   dispatch( setSearchResultValue('') );
 
   try {
-    const movies = await axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=5866d05c7430c5fadecafbbaec52573d&language=en-US&page=${page}`); 
-    const updateMovies = movies.data.results.map((movie) => ({
-      ...movie, 
-      isFavorite: false
-    }) )
-    dispatch( addMovies(updateMovies) );
+    const movies = await axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=5866d05c7430c5fadecafbbaec52573d&language=en-US&page=${page}`);
+    dispatch( addMovies(movies.data.results) );
     dispatch( setMoviesLoader(false) );   
   } catch {    
     dispatch( errMovies('Что-то пошло не так,,,,,,,,') );
@@ -111,8 +107,9 @@ const setMovieLoader = loader => {
 }
 
 export const setFavorite = id => (dispatch) => {
+
   dispatch( changeFavorite(id) );
-  dispatch( updateFavoriteList() );
+  dispatch( saveFavoritesInLocalStorage() );
 }
 
 const changeFavorite = id => {
@@ -122,8 +119,13 @@ const changeFavorite = id => {
   })
 }
 
-const updateFavoriteList = () => {
-  return ({
-    type: UPDATE_FAVORITE_LIST,
-  })  
+const saveFavoritesInLocalStorage = () => (dispatch, getState) => {
+  const state = getState();
+  const currentFavorites = state.moviesItems.favorites;
+
+  updateLocalStorage(currentFavorites);
+}
+
+const updateLocalStorage = (currentState) => {
+  localStorage.setItem('movies', JSON.stringify(currentState) );
 }

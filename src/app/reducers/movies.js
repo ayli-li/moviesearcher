@@ -3,20 +3,19 @@ import {
   FETCH_MOVIES_ERROR,
   FETCH_MOVIES_LOADING,
   SET_FAVORITES_ID,
-  SET_MOVIES_PAGE,
-  UPDATE_FAVORITE_LIST
+  SET_MOVIES_PAGE
 } from '../../constants';
 
 import { load } from 'redux-localstorage-simple';
 
-const moviesStorage = load({ namespace: 'movies' });
+const savedFavorites = load({ namespace: 'movies'});
 
 const initialState = {
   movies: [],
   errorMessage: '',
   isLoading: false,
   page: 1,
-  favorites: (moviesStorage && moviesStorage.moviesItems?.favorites) ? moviesStorage.moviesItems.favorites : []
+  favorites: savedFavorites.length > 0 ? savedFavorites : []
 }
 
 const movies = (state = initialState, {
@@ -44,25 +43,10 @@ const movies = (state = initialState, {
 
     case SET_FAVORITES_ID:
       return {
-        ...state, movies: state.movies.map((movie) => {
-          
-          if (movie.id === id) {
-            console.log(id);
-            localStorage.setItem('movies', JSON.stringify(movie));
-
-            return {
-              ...movie,             
-              isFavorite: movie.isFavorite ? false : true
-            }
-          }
-          return {...movie};
-        }),
+        ...state, favorites: state.favorites.map(favorite => favorite.id).includes(id) ? 
+                             state.favorites.filter((favorite) => favorite.id !== id) : 
+                             [...state.favorites, ...state.movies.filter((movie) => movie.id === id)]
       };
-
-    case UPDATE_FAVORITE_LIST:
-      return {...state,
-              favorites: state.movies.filter(movie => movie.isFavorite),
-             };
 
     case SET_MOVIES_PAGE:
       return {

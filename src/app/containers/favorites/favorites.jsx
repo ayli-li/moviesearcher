@@ -34,23 +34,18 @@ class Favorites extends Component {
     setFavorite(id);
   }
 
-  componentDidMount() {
-    const { favorites, fetchMovie } = this.props;
-    favorites.map(( { id } ) => fetchMovie(id) );
-  }
-
   renderFavorites = () => {  
     const { favorites } = this.props;
 
     return(        
         <div className="movies">
-            {favorites.map(( { poster_path, id, title, isFavorite } ) => {       
+            {favorites.map(( { poster_path, id, title } ) => {       
           
               const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
 
               return <Link to={`/movie-page/${id}`} className="movie_link">
                         <img className="image" alt={title} src={moviePoster} key={id} />
-                        <button className={isFavorite ? "favorite_heart_active" : "favorite_heart_no-active"} onClick={(event) => this.handleFavoriteClick(id, event)}>Heart</button>
+                        <button className onClick={(event) => this.handleFavoriteClick(id, event)}>Heart</button>
                     </Link>
               })
             }

@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 
@@ -8,83 +9,87 @@ import { SearchInput } from '../../components/input/input';
 
 import './practice.css';
 
-class Practice extends Component {
+let debounceApiSearch;
 
-  constructor(props) {
-    super();
-    this.state = {
-      lastScrollY: 0
-    }
+export const MainPage = () => {
 
-    this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
-    this.handleScroll = this.handleScroll.bind(this);
-  }
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  debounceApiSearch(searchInputText) {
-    const { fetchSearch } = this.props;
-    fetchSearch(searchInputText);
-  }
+  const dispatch = useDispatch();
 
-  handleInputChange(event) {
-    const { setInputValueSearch } = this.props;
-    setInputValueSearch(event.target.value); 
-    this.debounceApiSearch(event.target.value);  
-  }
+  const movies = useSelector(state => state.moviesItems.movies);
+  const error = useSelector(state => state.moviesItems.errorMessage);
+  const loader = useSelector(state => state.moviesItems.isLoading);
+  const page = useSelector(state => state.moviesItems.page);
+  const favorites = useSelector(state => state.moviesItems.favorites);
+  const searchInput = useSelector(state => state.search.searchInput);
+  const searchResult = useSelector(state => state.search.searchResult);
 
-  handleScroll() {
-    const { setMoviesPage } = this.props;
+  const handleScroll = () => {
     const scrollHeight = Math.max(
       document.body.scrollHeight, document.documentElement.scrollHeight,
       document.body.offsetHeight, document.documentElement.offsetHeight,
       document.body.clientHeight, document.documentElement.clientHeight);    
     
     if(window.scrollY + 1 > scrollHeight - window.innerHeight) {
-      this.setState({ lastScrollY: scrollHeight });
-      if(scrollHeight >= this.state.lastScrollY) {        
-        setMoviesPage();
+      setLastScrollY(scrollHeight);
+      if(scrollHeight >= lastScrollY) {        
+        dispatch(setMoviesPage() );
       }      
     }        
   }
 
-  handleFavoriteClick(id, event) {
-    const { setFavorite } = this.props;
+  const debounceSearch = (searchInputText) => {
+    dispatch(fetchSearch(searchInputText) );
+  }
+
+  useEffect(() => {
+    if(movies.length === 0) {
+      dispatch(fetchMovies() );
+    }
+    
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [movies.length, dispatch])
+
+  useEffect(() => {
+    if (page > 1) {
+      dispatch(fetchMovies() );
+      console.log(page);
+    }    
+  }, [page, dispatch])
+
+  useEffect(() => {
+    debounceApiSearch = debounce(debounceSearch, 2000)
+  }, [])
+
+  const handleFavoriteClick = (id, event) => {
     event.preventDefault();
 
-    setFavorite(id);
-  }  
-
-  componentDidMount() {
-    const { fetchMovies } = this.props;
-    fetchMovies();
-    window.addEventListener('scroll', this.handleScroll);
+    dispatch(setFavorite(id) );
   }
 
-  componentDidUpdate(prevProps) {
-    const { fetchMovies, page } = this.props;
-
-    if(prevProps.page !== page) {
-      fetchMovies();
-    }
-  }  
-
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+  const handleInputChange = (event) => {
+    dispatch(setInputValueSearch(event.target.value) ); 
+    debounceApiSearch(event.target.value);  
   }
-
-  renderMovies = () => {  
-    const { movies } = this.props;
-
-    // const filteredMovies = search ? movies.filter(movie => movie.title.toLowerCase().includes(search.toLowerCase()) ) : movies; 
+  
+  const renderMovies = () => {   
 
     return(
       <div className="movies">
-          {movies.map(( { poster_path, id, title, isFavorite } ) => {       
+          {movies.map(( { poster_path, id, title } ) => {      
       
             const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
 
+            const setFavoriteClass = favorites
+                                      .map(( {id} ) => id)
+                                      .includes(id) ? "favorite_heart_active" : "favorite_heart_no-active";
+
             return <Link to={`/movie-page/${id}`} className="movie_link">
                       <img className="image" alt={title} src={moviePoster} key={id} />
-                      <button className={isFavorite ? "favorite_heart_active" : "favorite_heart_no-active"} onClick={(event) => this.handleFavoriteClick(id, event)}>Heart</button>
+                      <button className={setFavoriteClass} onClick={(event) => handleFavoriteClick(id, event)}>Heart</button>
                    </Link>
             })
           }
@@ -92,8 +97,7 @@ class Practice extends Component {
     )
   }
 
-  renderError = () => {
-    const { error } = this.props;
+  const renderError = () => {
     return(
       <>
         { error && <div>{error}</div> }
@@ -101,43 +105,12 @@ class Practice extends Component {
     )
   }
 
-  render() {
-    const { loader, searchInput, searchResult } = this.props;   
-
-    return (
-        <> 
-          <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />        
-          { this.renderMovies() }
-          { loader && <div>Loading,,,,,,,</div>}
-          { this.renderError() }
-        </>       
-    );       
-  }
+  return (
+    <> 
+      <SearchInput value={searchInput} onChange={event => handleInputChange(event)} searchResult={searchResult} />        
+      { renderMovies() }
+      { loader && <div>Loading,,,,,,,</div>}
+      { renderError() }
+    </>     
+  )
 }
-
-const mapStateToProps = (state) => {
-  return ({
-    movies: state.moviesItems.movies,
-    error: state.moviesItems.errorMessage,
-    loader: state.moviesItems.isLoading,
-    page: state.moviesItems.page,
-    searchInput: state.search.searchInput,
-    searchResult: state.search.searchResult
-  })
-} 
-
-export default connect(mapStateToProps, { fetchMovies, fetchSearch, setInputValueSearch, setMoviesPage, setFavorite })(Practice);
-
- // let filteredMovies = [];
-
- // if(search === '') {             
- //    filteredMovies.push(...movies);         
- // } else {
- //   movies.map((movie) => {         
- //     if(movie.title.toLowerCase().includes(search.toLowerCase() )) {
- //       filteredMovies.push(movie);
- //     } 
- //     return '';
- //   })      
- // } 
- // console.log(filteredMovies);
