@@ -106,11 +106,14 @@ export const MainPage = () => {
   }
 
   return (
-    <> 
-      <SearchInput value={searchInput} onChange={event => handleInputChange(event)} searchResult={searchResult} />        
-      { renderMovies() }
-      { loader && <div>Loading,,,,,,,</div>}
-      { renderError() }
-    </>     
+    <>
+      { loader ? <div>Loading,,,,,</div> :
+      <> 
+        <SearchInput value={searchInput} onChange={event => handleInputChange(event)} searchResult={searchResult} />        
+        { renderMovies() }
+        { renderError() }
+      </>  
+      }
+    </>   
   )
 }

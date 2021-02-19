@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useLocation } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 
 import { fetchMovie, fetchSearch, setInputValueSearch, setFavorite } from '../../actions/actionCreator';
@@ -7,48 +8,53 @@ import { SearchInput } from '../../components/input/input';
 
 import './movie_page.css';
 
-class MoviePage extends Component {
+let debounceApiSearch;
 
-  constructor(props) {
-    super();
+export const MoviePage = () => {
 
-    this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
+  const dispatch = useDispatch();
+
+  const { id } = useParams();
+  const url = useLocation();
+
+  const movie = useSelector(state => state.movie.movie);
+  const favorites = useSelector(state => state.moviesItems.favorites);
+  const error = useSelector(state => state.movie.errorMessage);
+  const loader = useSelector(state => state.movie.isLoading);
+  const searchInput = useSelector(state => state.search.searchInput);
+  const searchResult = useSelector(state => state.search.searchResult);
+
+  const debounceSearch = (searchInputText) => {
+    dispatch(fetchSearch(searchInputText) );
   }
 
-  debounceApiSearch(searchInputText) {
-    const { fetchSearch } = this.props;
-    fetchSearch(searchInputText);
-  }
+  useEffect(() => {
+    const movieId = id || '';
+    const newUrl = url.pathname.split("movie-page/")[1];
 
-  handleInputChange(event) {
-    const { setInputValueSearch } = this.props;
-    setInputValueSearch(event.target.value); 
-    this.debounceApiSearch(event.target.value);  
-  }
+    dispatch(fetchMovie(movieId) );
 
-  handleFavoriteClick(id) {
-    const { setFavorite } = this.props;
-
-    setFavorite(id);
-  } 
-
-  componentDidMount() {
-    const id = this.props.match.params.id || '';
-    const { fetchMovie } = this.props;
-    fetchMovie(id);
-  }
-
-  componentDidUpdate(prevProps) {
-    const { fetchMovie } = this.props;
-    const url = prevProps.history.location.pathname.split("movie-page/")[1];
-
-    if(prevProps.match.params.id !== url) {
-      fetchMovie(url);
+    if (movieId !== newUrl) {
+      dispatch(fetchMovie(newUrl) );
     }
+  }, [id, url, dispatch]);
+
+  useEffect(() => {
+    debounceApiSearch = debounce(debounceSearch, 2000)
+  }, [])
+
+  const handleFavoriteClick = (id, event) => {
+    event.preventDefault();
+
+    dispatch(setFavorite(id) );
   }
 
-  renderMovie = () => {
-    const { movie, favorites } = this.props;
+  const handleInputChange = (event) => {
+    dispatch(setInputValueSearch(event.target.value) ); 
+    debounceApiSearch(event.target.value);  
+  }
+
+  const renderMovie = () => {
 
     if(movie) {
       const moviePoster = `https://image.tmdb.org/t/p/original/${movie.poster_path}`;
@@ -60,7 +66,7 @@ class MoviePage extends Component {
         <div className="data">
           <div className="movie_link">
             <img className="image" alt={movie.title} src={moviePoster} key={movie.id} />
-            <button className={setFavoriteClass} onClick={() => this.handleFavoriteClick(movie.id)}>Heart</button>
+            <button className={setFavoriteClass} onClick={(event) => handleFavoriteClick(movie.id, event)}>Heart</button>
           </div>
           <div>
             <div>{movie.title}</div>
@@ -72,8 +78,7 @@ class MoviePage extends Component {
     }
   }
 
-  renderError = () => {
-    const { error } = this.props;
+  const renderError = () => {
     return(
       <>
         { error && <div>{error}</div> }
@@ -81,32 +86,26 @@ class MoviePage extends Component {
     )
   }
 
-  render() {
-    const { loader, searchInput, searchResult } = this.props;
-
-    return (
-      <>
-       { loader ? <div>Loading,,,,,</div> : 
-        <> 
-          <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />        
-          { this.renderMovie() } 
-          { this.renderError() }
-        </>
-        }
-      </>      
-    );
-  }
+  return (
+    <>
+     { loader ? <div>Loading,,,,,</div> : 
+      <> 
+        <SearchInput value={searchInput} onChange={event => handleInputChange(event)} searchResult={searchResult} />        
+        { renderMovie() } 
+        { renderError() }
+      </>
+      }
+    </>      
+  );
 }
 
-const mapStateToProps = (state) => {
-  return ({
-    movie: state.movie.movie,
-    favorites: state.moviesItems.favorites,
-    error: state.movie.errorMessage,
-    loader: state.movie.isLoading,
-    searchInput: state.search.searchInput,
-    searchResult: state.search.searchResult
-  })
-} 
 
-export default connect(mapStateToProps, { fetchMovie, fetchSearch, setInputValueSearch, setFavorite })(MoviePage);
+
+
+
+// movie: state.movie.movie,
+//     favorites: state.moviesItems.favorites,
+//     error: state.movie.errorMessage,
+//     loader: state.movie.isLoading,
+//     searchInput: state.search.searchInput,
+//     searchResult: state.search.searchResult

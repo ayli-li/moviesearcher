@@ -1,41 +1,46 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import debounce from 'lodash.debounce';
 
-import { fetchMovie, fetchSearch, setInputValueSearch, setFavorite } from '../../actions/actionCreator';
+import { fetchSearch, setInputValueSearch, setFavorite } from '../../actions/actionCreator';
 import { SearchInput } from '../../components/input/input';
 
 import './favorites.css';
 
-class Favorites extends Component {
+let debounceApiSearch;
 
-  constructor(props) {
-    super();
+export const Favorites = () => {
 
-    this.debounceApiSearch = debounce(this.debounceApiSearch.bind(this), 2000);
+  const dispatch = useDispatch();
+
+  const favorites = useSelector(state => state.moviesItems.favorites);
+  const error = useSelector(state => state.movie.errorMessage);
+  const loader = useSelector(state => state.movie.isLoading);
+  const searchInput = useSelector(state => state.search.searchInput);
+  const searchResult = useSelector(state => state.search.searchResult);
+
+  const debounceSearch = (searchInputText) => {
+    dispatch(fetchSearch(searchInputText) );
   }
 
-  debounceApiSearch(searchInputText) {
-    const { fetchSearch } = this.props;
-    fetchSearch(searchInputText);
-  }
+  useEffect(() => {
+    debounceApiSearch = debounce(debounceSearch, 2000)
+  }, [])
 
-  handleInputChange(event) {
-    const { setInputValueSearch } = this.props;
-    setInputValueSearch(event.target.value); 
-    this.debounceApiSearch(event.target.value);  
-  }
-
-  handleFavoriteClick(id, event) {
-    const { setFavorite } = this.props;
+  const handleFavoriteClick = (id, event) => {
     event.preventDefault();
 
-    setFavorite(id);
+    dispatch(setFavorite(id) );
   }
 
-  renderFavorites = () => {  
-    const { favorites } = this.props;
+  const handleInputChange = (event) => {
+    dispatch(setInputValueSearch(event.target.value) ); 
+    debounceApiSearch(event.target.value);  
+  }
+
+  const renderFavorites = () => {
 
     return(        
         <div className="movies">
@@ -43,9 +48,13 @@ class Favorites extends Component {
           
               const moviePoster = `https://image.tmdb.org/t/p/original/${poster_path}`;
 
+              const setFavoriteClass = favorites
+                                      .map(( {id} ) => id)
+                                      .includes(id) ? "favorite_heart_active" : "favorite_heart_no-active";
+
               return <Link to={`/movie-page/${id}`} className="movie_link">
                         <img className="image" alt={title} src={moviePoster} key={id} />
-                        <button className onClick={(event) => this.handleFavoriteClick(id, event)}>Heart</button>
+                        <button className={setFavoriteClass} onClick={(event) => handleFavoriteClick(id, event)}>Heart</button>
                     </Link>
               })
             }
@@ -53,8 +62,7 @@ class Favorites extends Component {
       )
   }
 
-  renderError = () => {
-    const { error } = this.props;
+  const renderError = () => {
     return(
       <>
         { error && <div>{error}</div> }
@@ -62,32 +70,15 @@ class Favorites extends Component {
     )
   }
 
-  render() {
-    const { loader, searchInput, searchResult, favorites } = this.props;
-
-    return (
-      <>
-       { loader ? <div>Loading,,,,,</div> : 
-        <> 
-          <SearchInput value={searchInput} onChange={event => this.handleInputChange(event)} searchResult={searchResult} />
-          { favorites.length > 0 ? this.renderFavorites() : <h3>There is no favorite movies</h3> }      
-          { this.renderError() }
-        </>
-        }
-      </>      
-    );
-  }      
+  return (
+    <>
+      { loader ? <div>Loading,,,,,</div> :
+      <> 
+        <SearchInput value={searchInput} onChange={event => handleInputChange(event)} searchResult={searchResult} />
+        { favorites.length > 0 ? renderFavorites() : <h3>There is no favorite movies</h3> }  
+        { renderError() }
+      </> 
+      }
+    </>  
+  )
 }
-
-const mapStateToProps = (state) => {
-  return ({
-    favorites: state.moviesItems.favorites,
-    movie: state.movie.movie,  
-    error: state.movie.errorMessage,
-    loader: state.movie.isLoading,
-    searchInput: state.search.searchInput,
-    searchResult: state.search.searchResult
-  })
-} 
-
-export default connect(mapStateToProps, { fetchMovie,  fetchSearch, setInputValueSearch, setFavorite })(Favorites);
