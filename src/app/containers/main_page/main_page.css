@@ -1,0 +1,11 @@
+.movies {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+}
+
+.container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}

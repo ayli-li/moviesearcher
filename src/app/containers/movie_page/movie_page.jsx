@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useLocation } from 'react-router-dom';
@@ -98,14 +99,3 @@ export const MoviePage = () => {
     </>      
   );
 }
-
-
-
-
-
-// movie: state.movie.movie,
-//     favorites: state.moviesItems.favorites,
-//     error: state.movie.errorMessage,
-//     loader: state.movie.isLoading,
-//     searchInput: state.search.searchInput,
-//     searchResult: state.search.searchResult

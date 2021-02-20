@@ -6,8 +6,9 @@ import debounce from 'lodash.debounce';
 
 import { fetchMovies, fetchSearch, setInputValueSearch, setMoviesPage, setFavorite } from '../../actions/actionCreator';
 import { SearchInput } from '../../components/input/input';
+import { AsideGenres } from '../../components/aside_genres/aside_genres';
 
-import './practice.css';
+import './main_page.css';
 
 let debounceApiSearch;
 
@@ -56,7 +57,6 @@ export const MainPage = () => {
   useEffect(() => {
     if (page > 1) {
       dispatch(fetchMovies() );
-      console.log(page);
     }    
   }, [page, dispatch])
 
@@ -74,6 +74,15 @@ export const MainPage = () => {
     dispatch(setInputValueSearch(event.target.value) ); 
     debounceApiSearch(event.target.value);  
   }
+
+  const handleGenresClick = (event) => {
+    console.log(event.target.id);
+    console.log(movies.map(( { genre_ids } ) => genre_ids.includes(event.target.id)))
+
+                      //.filter(ids => ids.includes(event.target.id) ) )
+                      
+
+  }
   
   const renderMovies = () => {   
 
@@ -89,7 +98,7 @@ export const MainPage = () => {
 
             return <Link to={`/movie-page/${id}`} className="movie_link">
                       <img className="image" alt={title} src={moviePoster} key={id} />
-                      <button className={setFavoriteClass} onClick={(event) => handleFavoriteClick(id, event)}>Heart</button>
+                      <button className={setFavoriteClass} onClick={event => handleFavoriteClick(id, event)}>Heart</button>
                    </Link>
             })
           }
@@ -109,8 +118,11 @@ export const MainPage = () => {
     <>
       { loader ? <div>Loading,,,,,</div> :
       <> 
-        <SearchInput value={searchInput} onChange={event => handleInputChange(event)} searchResult={searchResult} />        
-        { renderMovies() }
+        <SearchInput value={searchInput} onChange={event => handleInputChange(event)} searchResult={searchResult} /> 
+        <div className="container">
+          <AsideGenres onClick={event => handleGenresClick(event)}/>       
+          { renderMovies() }
+        </div>
         { renderError() }
       </>  
       }

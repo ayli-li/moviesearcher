@@ -1,6 +1,5 @@
 import { createStore, compose, applyMiddleware } from 'redux';
 import rootReducer from './reducers/index';
-import { save } from 'redux-localstorage-simple';
 import thunk from 'redux-thunk';
 
 const composeEnhancers =
