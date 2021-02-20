@@ -7,8 +7,7 @@ export const AsideGenres = ( {onClick} ) => {
   return <>
     <aside>
       { genres.map(( { id, name } ) => {
-          return  <ul>
-                    <li  >
+          return  <div key={id}>
                       <label>
                         <input onClick={onClick} 
                                id={id}
@@ -16,8 +15,7 @@ export const AsideGenres = ( {onClick} ) => {
                                name={name} />
                         {name}
                       </label>
-                    </li>
-                  </ul>
+                    </div>
           })
       }
     </aside>

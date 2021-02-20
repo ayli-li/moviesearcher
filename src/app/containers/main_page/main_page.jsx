@@ -76,12 +76,10 @@ export const MainPage = () => {
   }
 
   const handleGenresClick = (event) => {
-    console.log(event.target.id);
-    console.log(movies.map(( { genre_ids } ) => genre_ids.includes(event.target.id)))
-
-                      //.filter(ids => ids.includes(event.target.id) ) )
-                      
-
+    const currentId = event.target.id;
+    console.log(currentId);
+    const moviesByGenres = movies.filter(movie => movie.genre_ids.includes(Number(currentId)));
+    console.log(moviesByGenres);
   }
   
   const renderMovies = () => {   
@@ -96,7 +94,7 @@ export const MainPage = () => {
                                       .map(( {id} ) => id)
                                       .includes(id) ? "favorite_heart_active" : "favorite_heart_no-active";
 
-            return <Link to={`/movie-page/${id}`} className="movie_link">
+            return <Link to={`/movie-page/${id}`} className="movie_link" key={id}>
                       <img className="image" alt={title} src={moviePoster} key={id} />
                       <button className={setFavoriteClass} onClick={event => handleFavoriteClick(id, event)}>Heart</button>
                    </Link>

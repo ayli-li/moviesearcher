@@ -1,4 +1,4 @@
-import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, FETCH_GENRES_SUCCESS, FETCH_GENRES_ERROR, FETCH_GENRES_LOADING, SET_MOVIES_PAGE, SET_INPUT_SEARCH, SET_FAVORITES_ID } from '../../constants';
+import { FETCH_MOVIES_SUCCESS, FETCH_MOVIES_ERROR, FETCH_MOVIES_LOADING, FETCH_MOVIES_SEARCH, FETCH_MOVIE_SUCCESS, FETCH_MOVIE_ERROR, FETCH_MOVIE_LOADING, SET_MOVIES_PAGE, SET_INPUT_SEARCH, SET_FAVORITES_ID } from '../../constants';
 import axios from 'axios';
 
 export const fetchMovies = () => async (dispatch, getState) => {
@@ -128,40 +128,4 @@ const saveFavoritesInLocalStorage = () => (dispatch, getState) => {
 
 const updateLocalStorage = (currentState) => {
   localStorage.setItem('movies', JSON.stringify(currentState) );
-}
-
-export const fetchMoviesGenres = () => async (dispatch, getState) => {
-  const state = getState();
-  console.log(state);
-  dispatch( setGenresLoader(true) ); 
-
-  try {
-    const genres = await axios.get(`https://api.themoviedb.org/3/genre/movie/list?api_key=5866d05c7430c5fadecafbbaec52573d&language=en-US`);    
-    dispatch( addGenres(genres) );
-    dispatch( setGenresLoader(false) );   
-  } catch {    
-    dispatch( errGenres('Что-то пошло не так,,,,,,,,') );
-    dispatch( setGenresLoader(false) );
-  }
-}
-
-const addGenres = genre => {
-  return ({
-    type: FETCH_GENRES_SUCCESS,
-    genre
-  })
-}
-
-const errGenres = err => {
-  return ({
-    type: FETCH_GENRES_ERROR,
-    err
-  })
-}
-
-const setGenresLoader = loader => {
-  return ({
-    type: FETCH_GENRES_LOADING,
-    loader
-  })
 }
